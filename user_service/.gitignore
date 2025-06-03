@@ -1,0 +1,45 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+.venv/
+
+# Django migrations - optional: ignore only empty or auto-generated ones
+**/migrations/__pycache__/
+**/migrations/*.pyc
+# Uncomment this if you want to ignore all migration files
+# **/migrations/*.py
+
+# Ignore local settings or secret config
+*.env
+*.local
+.env.*
+
+# macOS & editor files
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Pytest cache and test artifacts
+.pytest_cache/
+coverage.xml
+htmlcov/
+.tox/
+
+# Ignore SQLite database and logs (if used locally)
+db.sqlite3
+*.log
+
+# Optional: compiled frontend or static builds
+staticfiles/
+static/
+build/
+dist/
+
+# Ignore black/formatter temp files
+*.bak
