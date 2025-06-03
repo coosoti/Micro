@@ -29,3 +29,20 @@ class RegisterView(APIView):
 
         # If data is invalid, return errors with HTTP 400
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LoginView(APIView):
+    def post(self, request):
+        # Extract username and password from the request body
+        username = request.data.get('username')
+        password = request.data.get('password')
+
+        # Use Django's `authenticate` to verify credentials
+        user = authenticate(username=username, password=password)
+
+        if user:
+            # Login successful
+            return Response({"message": "Login successful"}, status=status.HTTP_200_OK)
+
+        # Login failed
+        return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
