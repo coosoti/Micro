@@ -16,6 +16,10 @@ from .models import User
 # Import the serializer used to convert User objects to/from JSON
 from .serializers import UserSerializer
 
+from rest_framework.authtoken.models import Token
+
+# Import DRF's built-in permission class to restrict access to authenticated users only
+from rest_framework.permissions import IsAuthenticated
 
 class RegisterView(APIView):
     def post(self, request):
@@ -31,24 +35,52 @@ class RegisterView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class LoginView(APIView):
-    def post(self, request):
+#class LoginView(APIView):
+ #   def post(self, request):
         # Extract username and password from the request body
+  #      username = request.data.get('username')
+   #     password = request.data.get('password')
+
+        # Use Django's `authenticate` to verify credentials
+    #    user = authenticate(username=username, password=password)
+
+     #   if user:
+            # Login successful
+      #      return Response({"message": "Login successful"}, status=status.HTTP_200_OK)
+
+        # Login failed
+       # return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+class LoginView(APIView):
+    # This method handles POST requests for user login
+    def post(self, request):
+        # Extract username and password from the incoming request data (JSON body)
         username = request.data.get('username')
         password = request.data.get('password')
 
-        # Use Django's `authenticate` to verify credentials
+        # Use Django's built-in authentication system to verify credentials
         user = authenticate(username=username, password=password)
 
+        # If authentication is successful (user is not None)
         if user:
-            # Login successful
-            return Response({"message": "Login successful"}, status=status.HTTP_200_OK)
+            # Get or create an authentication token for this user
+            # If a token already exists for the user, it will be reused
+            token, created = Token.objects.get_or_create(user=user)
 
-        # Login failed
+            # Return the token in the response with HTTP 200 OK
+            return Response({'token': token.key}, status=status.HTTP_200_OK)
+
+        # If authentication fails (user is None), return an error response
         return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class ProfileView(APIView):
+
+    # Only allow access to this view if the user is authenticated
+    # This prevents anonymous users from accessing the profile endpoint
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         # Get the currently authenticated user
         user = request.user
