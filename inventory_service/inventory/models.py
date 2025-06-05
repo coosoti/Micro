@@ -1,7 +1,10 @@
 from django.db import models
 
+
 class Inventory(models.Model):
-    product_id = models.IntegerField()  # Reference to Product (cross-service communication)
+    product_id = (
+        models.IntegerField()
+    )  # Reference to Product (cross-service communication)
     quantity = models.PositiveIntegerField()  # Quantity in stock
 
     def __str__(self):
