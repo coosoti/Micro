@@ -1,0 +1,50 @@
+version: "3.8"
+
+services:
+  user_service:
+    build:
+      context: ./user_service
+    ports:
+      - "8000:8000"
+    command: >
+      gunicorn user_service.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - ./user_service:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=user_service.settings
+
+  product_service:
+    build:
+      context: ./product_service
+    ports:
+      - "8001:8000"
+    command: >
+      gunicorn product_service.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - ./product_service:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=product_service.settings
+
+  inventory_service:
+    build:
+      context: ./inventory_service
+    ports:
+      - "8002:8000"
+    command: >
+      gunicorn inventory_service.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - ./inventory_service:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=inventory_service.settings
+
+  order_service:
+    build:
+      context: ./order_service
+    ports:
+      - "8003:8000"
+    command: >
+      gunicorn order_service.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - ./order_service:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=order_service.settings
