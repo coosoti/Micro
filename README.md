@@ -286,6 +286,138 @@ Content-Type: application/json
 
 ⸻
 
-📄 License
+🧾 Order Service
 
-MIT © 2025 Charles
+The Order Service is a microservice built using Django and Django REST Framework (DRF) that handles the creation and management of customer orders. It communicates with the Product Service to validate product IDs before processing any order.
+
+⸻
+
+📦 Features
+	•	Create, retrieve, update, and delete orders
+	•	Validates that a product exists before accepting an order
+	•	Quantity validation to prevent invalid data
+	•	RESTful API endpoints with Swagger documentation
+
+⸻
+
+📁 Project Structure
+
+order_service/
+├── orders/
+│   ├── migrations/
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── models.py         # Order model
+│   ├── serializers.py    # Validation logic
+│   ├── views.py          # API views
+│   ├── urls.py           # Route definitions
+├── order_service/
+│   ├── settings.py
+│   ├── urls.py           # Main URL router
+├── manage.py
+├── Dockerfile
+├── requirements.txt
+
+
+⸻
+
+🚀 Getting Started
+
+1. Clone the Repository
+
+git clone https://github.com/your-username/order_service.git
+cd order_service
+
+2. Create a Virtual Environment (Optional)
+
+python -m venv venv
+source venv/bin/activate  # or .\venv\Scripts\activate on Windows
+
+3. Install Dependencies
+
+pip install -r requirements.txt
+
+4. Run Migrations
+
+python manage.py migrate
+
+5. Start the Development Server
+
+python manage.py runserver 8003
+
+
+⸻
+
+🐳 Docker Usage
+
+Build and Run
+
+docker build -t order_service_container .
+docker run -p 8003:8000 order_service_container
+
+Ensure the Product Service is running and accessible at http://product_service:8000.
+
+⸻
+
+🛠 API Endpoints
+
+✅ Create an Order
+
+POST /api/orders/
+
+Body:
+
+{
+  "customer_name": "Alice",
+  "product_id": 1,
+  "quantity": 3
+}
+
+📦 List All Orders
+
+GET /api/orders/
+
+🔍 Retrieve Single Order
+
+GET /api/orders/{id}/
+
+♻️ Update Order
+
+PUT /api/orders/{id}/
+
+❌ Delete Order
+
+DELETE /api/orders/{id}/
+
+
+⸻
+
+📚 Swagger/OpenAPI Docs
+
+Access API documentation at:
+
+http://localhost:8003/swagger/
+
+
+⸻
+
+🧪 Testing With Postman
+	•	Use POST to create new orders.
+	•	Try invalid product_id or quantity to test validations.
+	•	Ensure product_service is running in Docker or accessible to your Order Service container.
+
+⸻
+
+🔒 Validations
+	•	quantity must be greater than 0
+	•	product_id must exist in Product Service
+
+⸻
+
+🔗 Related Services
+	•	Product Service: Validates the existence of products
+	•	Inventory Service (optional): Can be integrated to validate stock levels
+
+⸻
+📄 License MIT © 2025 Charles

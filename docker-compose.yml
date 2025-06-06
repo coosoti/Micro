@@ -1,50 +1,50 @@
 version: "3.8"
 
 services:
-  user_service:
+  user-service:
     build:
-      context: ./user_service
+      context: ./user-service
     ports:
       - "8000:8000"
     command: >
-      gunicorn user_service.wsgi:application --bind 0.0.0.0:8000
+      gunicorn user-service.wsgi:application --bind 0.0.0.0:8000
     volumes:
-      - ./user_service:/app
+      - ./user-service:/app
     environment:
-      - DJANGO_SETTINGS_MODULE=user_service.settings
+      - DJANGO_SETTINGS_MODULE=user-service.settings
 
-  product_service:
+  product-service:
     build:
-      context: ./product_service
+      context: ./product-service
     ports:
       - "8001:8000"
     command: >
-      gunicorn product_service.wsgi:application --bind 0.0.0.0:8000
+      gunicorn product-service.wsgi:application --bind 0.0.0.0:8000
     volumes:
-      - ./product_service:/app
+      - ./product-service:/app
     environment:
-      - DJANGO_SETTINGS_MODULE=product_service.settings
+      - DJANGO_SETTINGS_MODULE=product-service.settings
 
-  inventory_service:
+  inventory-service:
     build:
-      context: ./inventory_service
+      context: ./inventory-service
     ports:
       - "8002:8000"
     command: >
-      gunicorn inventory_service.wsgi:application --bind 0.0.0.0:8000
+      gunicorn inventory-service.wsgi:application --bind 0.0.0.0:8000
     volumes:
-      - ./inventory_service:/app
+      - ./inventory-service:/app
     environment:
-      - DJANGO_SETTINGS_MODULE=inventory_service.settings
+      - DJANGO_SETTINGS_MODULE=inventory-service.settings
 
-  order_service:
+  order-service:
     build:
-      context: ./order_service
+      context: ./order-service
     ports:
       - "8003:8000"
     command: >
-      gunicorn order_service.wsgi:application --bind 0.0.0.0:8000
+      gunicorn order-service.wsgi:application --bind 0.0.0.0:8000
     volumes:
-      - ./order_service:/app
+      - ./order-service:/app
     environment:
-      - DJANGO_SETTINGS_MODULE=order_service.settings
+      - DJANGO_SETTINGS_MODULE=order-service.settings
