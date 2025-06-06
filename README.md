@@ -1,423 +1,136 @@
-# Micro - Django MicroServices Implementation
 
+🧩 Microservices Overview
 
-🧑‍💻 user_service - Django Microservice for User Management
+This project follows a microservices architecture using Django REST Framework. The following services are implemented:
 
-📌 Overview
-
-user_service is a Django RESTful microservice that handles user registration, login, and profile management. It includes token-based authentication using Django REST Framework’s Token Authentication.
-
-⸻
-
-🚀 Features
-	•	User Registration with secure password hashing
-	•	User Login with token authentication
-	•	Authenticated Profile Retrieval
-	•	Dockerized for containerized deployment
-	•	PostgreSQL as the primary database
-
-⸻
-
-📂 Project Structure
-
-user_service/
-│
-├── Dockerfile
-├── requirements.txt
-├── manage.py
-├── user_service/
-│   └── settings.py, urls.py, wsgi.py, etc.
-└── users/
-    ├── models.py
-    ├── serializers.py
-    ├── views.py
-    ├── urls.py
-    └── ...
+Service	Description	URL Prefix	Port
+User	Manages user registration & authentication	/api/users/	8000
+Product	Handles product creation & listing	/api/products/	8001
+Inventory	Tracks product stock levels	/api/inventory/	8002
+Order	Processes orders	/api/orders/	8003
 
 
 ⸻
 
-⚙️ Setup Instructions
+⚙️ Architecture Diagram
 
-1. Clone the Repository
-
-git clone <your-repo-url>
-cd user_service
-
-2. Configure Environment (Optional)
-
-Edit the database config in user_service/settings.py if not using Docker Compose:
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'user_service_db',
-        'USER': 'db_user',
-        'PASSWORD': 'db_password',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
+                            +-------------+
+                            |  Frontend   |
+                            +------+------+ 
+                                   |
+             +---------------------|----------------------+
+             |                    API Gateway             |
+             +-----------+---------+---------+-----------+
+                         |                   |
+         +---------------+                   +----------------+
+         |                                      |
++--------v--------+        +----------------+   +----------------+
+|  User Service   |<------>|  Order Service |-->| Inventory Svc  |
+|    (8000)       |        |     (8003)     |   |    (8002)      |
++-----------------+        +----------------+   +----------------+
+                              ^
+                              |
+                          +---+----+
+                          | Product |
+                          | Service |
+                          | (8001)  |
+                          +--------+
 
 
 ⸻
 
-🐳 Docker Setup
+🚀 How to Run with Docker Compose
+	1.	Create .env files (optional for environment configs)
+	2.	Start all services:
 
-3. Build and Run the Container
-
-docker build -t user_service_container .
-docker run -p 8000:8000 user_service_container
-
-4. With Docker Compose
-```
-# docker-compose.yml (example snippet)
-version: '3.8'
-services:
-  user_service:
-    build: .
-    ports:
-      - "8000:8000"
-    environment:
-      - DEBUG=1
-    depends_on:
-      - db
-  db:
-    image: postgres:13
-    environment:
-      POSTGRES_DB: user_service_db
-      POSTGRES_USER: db_user
-      POSTGRES_PASSWORD: db_password
-```
-```
 docker-compose up --build
-```
+
+	3.	Access Each Service:
+
+	•	User: http://localhost:8000/api/users/
+	•	Product: http://localhost:8001/api/products/
+	•	Inventory: http://localhost:8002/api/inventory/
+	•	Order: http://localhost:8003/api/orders/
 
 ⸻
 
-📫 API Endpoints
+📦 Postman Collection
 
-Method	Endpoint	Description	Auth Required
-POST	/api/users/register/	Register a new user	❌
-POST	/api/users/login/	Login, receive token	❌
-GET	/api/users/profile/	View user profile	✅
-
-Use Authorization: Token <your_token> in headers for protected routes.
+You can import this Postman Collection JSON (replace # with actual link if hosted or share as file).
 
 ⸻
 
-📦 product_service - Django Microservice for Product Management
+📘 Swagger/OpenAPI Documentation
 
-📌 Overview
+Each service includes Swagger/OpenAPI documentation at:
+	•	User: http://localhost:8000/swagger/
+	•	Product: http://localhost:8001/swagger/
+	•	Inventory: http://localhost:8002/swagger/
+	•	Order: http://localhost:8003/swagger/
 
-product_service is a standalone Django REST microservice for creating, listing, updating, and deleting product entries.
+Use drf-yasg or drf-spectacular in your services:
+
+pip install drf-yasg
+
+Add to each service’s urls.py:
+
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+from rest_framework.permissions import AllowAny
+
+schema_view = get_schema_view(
+   openapi.Info(title="Service API", default_version='v1'),
+   public=True,
+   permission_classes=(AllowAny,),
+)
+
+urlpatterns += [
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+]
+
 
 ⸻
 
-🚀 Features
-	•	CRUD operations on Product Model
-	•	DRF Generic Views for performance
-	•	RESTful endpoints
-	•	Docker-ready
-	•	PostgreSQL supported
+✅ Sample Test Flow
+
+To test service-to-service flow:
+	1.	Create Product
+POST http://localhost:8001/api/products/
+	2.	Add Inventory
+POST http://localhost:8002/api/inventory/
+	3.	Place Order
+POST http://localhost:8003/api/orders/
+
+Backend will:
+	•	Call Product to verify product exists.
+	•	Call Inventory to reduce stock.
+	•	Save Order.
 
 ⸻
 
-📂 Project Structure
+🧪 Integration Behavior
+	1.	Verify:
+	•	Order created successfully
+	•	Inventory reduced
+	•	Product reference is valid
+	2.	Error Scenarios:
+	•	Ordering non-existent product returns error.
+	•	Insufficient stock returns error.
 
-product_service/
-│
-├── Dockerfile
-├── requirements.txt
-├── manage.py
+⸻
+
+📁 Directory Structure
+
+root/
+├── user_service/
 ├── product_service/
-│   └── settings.py, urls.py, wsgi.py, etc.
-└── products/
-    ├── models.py
-    ├── serializers.py
-    ├── views.py
-    ├── urls.py
-    └── ...
-
-
-⸻
-
-⚙️ Setup Instructions
-
-1. Clone the Repository
-
-git clone <your-repo-url>
-cd product_service
-
-2. Edit Database Settings (Optional)
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'product_service_db',
-        'USER': 'db_user',
-        'PASSWORD': 'db_password',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
-
-
-⸻
-
-🐳 Docker Setup
-
-3. Build and Run
-
-docker build -t product_service_container .
-docker run -p 8001:8000 product_service_container
-
-
-⸻
-
-📫 API Endpoints
-
-Method	Endpoint	Description
-GET	/api/products/	List all products
-POST	/api/products/	Create a new product
-GET	/api/products/<id>/	Retrieve a product
-PUT	/api/products/<id>/	Update a product
-DELETE	/api/products/<id>/	Delete a product
-
-Example POST Request (via Postman or cURL):
-
-POST /api/products/
-{
-  "name": "Laptop",
-  "description": "A powerful device",
-  "price": 999.99,
-  "stock": 10
-}
-
-
-# Inventory Service (Microservice)
-
-This is the Inventory microservice in a Django-based microservices architecture. It manages product stock levels, availability, and updates.
-
-## 🚀 Features
-
-- Add and manage inventory for products
-- RESTful API using Django REST Framework
-- Containerized with Docker
-- Ready for integration with Product and Order services
-
-## 🧱 Tech Stack
-
-- Python 3.10
-- Django 4.x
-- Django REST Framework
-- PostgreSQL (or SQLite for development)
-- Docker + Gunicorn
-
-## 📦 Setup
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/your-username/inventory_service.git
-cd inventory_service
-
-2. Create virtual environment
-
-python3 -m venv venv
-source venv/bin/activate
-
-3. Install dependencies
-
-pip install -r requirements.txt
-
-4. Apply migrations
-
-python manage.py migrate
-
-5. Run locally
-
-python manage.py runserver 8002
-
-
-⸻
-
-🐳 Docker Instructions
-
-Build the Docker image
-
-docker build -t inventory_service_container .
-
-Run the Docker container
-
-docker run -p 8002:8002 inventory_service_container
-
-
-⸻
-
-📬 API Endpoints
-
-Method	Endpoint	Description
-GET	/api/inventory/	List inventory items
-POST	/api/inventory/	Add new stock entry
-GET	/api/inventory/<id>/	Retrieve stock by ID
-PUT	/api/inventory/<id>/	Update stock
-DELETE	/api/inventory/<id>/	Remove stock item
-
-
-⸻
-
-🧪 Testing With Postman
-
-POST /api/inventory/
-Content-Type: application/json
-
-{
-  "product_id": 1,
-  "quantity": 100
-}
-
-
-⸻
-
-🔗 Related Services
-	•	User Service (port 8000)
-	•	Product Service (port 8001)
-
-⸻
-
-🧾 Order Service
-
-The Order Service is a microservice built using Django and Django REST Framework (DRF) that handles the creation and management of customer orders. It communicates with the Product Service to validate product IDs before processing any order.
-
-⸻
-
-📦 Features
-	•	Create, retrieve, update, and delete orders
-	•	Validates that a product exists before accepting an order
-	•	Quantity validation to prevent invalid data
-	•	RESTful API endpoints with Swagger documentation
-
-⸻
-
-📁 Project Structure
-
-order_service/
-├── orders/
-│   ├── migrations/
-│   ├── __init__.py
-│   ├── admin.py
-│   ├── apps.py
-│   ├── models.py         # Order model
-│   ├── serializers.py    # Validation logic
-│   ├── views.py          # API views
-│   ├── urls.py           # Route definitions
+├── inventory_service/
 ├── order_service/
-│   ├── settings.py
-│   ├── urls.py           # Main URL router
-├── manage.py
-├── Dockerfile
-├── requirements.txt
+├── docker-compose.yml
+└── README.md
 
 
 ⸻
 
-🚀 Getting Started
-
-1. Clone the Repository
-
-git clone https://github.com/your-username/order_service.git
-cd order_service
-
-2. Create a Virtual Environment (Optional)
-
-python -m venv venv
-source venv/bin/activate  # or .\venv\Scripts\activate on Windows
-
-3. Install Dependencies
-
-pip install -r requirements.txt
-
-4. Run Migrations
-
-python manage.py migrate
-
-5. Start the Development Server
-
-python manage.py runserver 8003
-
-
-⸻
-
-🐳 Docker Usage
-
-Build and Run
-
-docker build -t order_service_container .
-docker run -p 8003:8000 order_service_container
-
-Ensure the Product Service is running and accessible at http://product_service:8000.
-
-⸻
-
-🛠 API Endpoints
-
-✅ Create an Order
-
-POST /api/orders/
-
-Body:
-
-{
-  "customer_name": "Alice",
-  "product_id": 1,
-  "quantity": 3
-}
-
-📦 List All Orders
-
-GET /api/orders/
-
-🔍 Retrieve Single Order
-
-GET /api/orders/{id}/
-
-♻️ Update Order
-
-PUT /api/orders/{id}/
-
-❌ Delete Order
-
-DELETE /api/orders/{id}/
-
-
-⸻
-
-📚 Swagger/OpenAPI Docs
-
-Access API documentation at:
-
-http://localhost:8003/swagger/
-
-
-⸻
-
-🧪 Testing With Postman
-	•	Use POST to create new orders.
-	•	Try invalid product_id or quantity to test validations.
-	•	Ensure product_service is running in Docker or accessible to your Order Service container.
-
-⸻
-
-🔒 Validations
-	•	quantity must be greater than 0
-	•	product_id must exist in Product Service
-
-⸻
-
-🔗 Related Services
-	•	Product Service: Validates the existence of products
-	•	Inventory Service (optional): Can be integrated to validate stock levels
-
-⸻
-📄 License MIT © 2025 Charles
+✍️ Contributors
+	•	You (Project Lead 👨‍💻)
