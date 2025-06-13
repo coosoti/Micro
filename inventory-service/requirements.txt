@@ -1,3 +1,5 @@
+whitenoise
+drf-yasg
 requests
 asgiref==3.8.1
 black==25.1.0

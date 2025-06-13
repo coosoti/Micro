@@ -10,6 +10,7 @@ services:
       gunicorn user-service.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - ./user-service:/app
+      - ./user-service/staticfiles:/app/staticfiles
     environment:
       - DJANGO_SETTINGS_MODULE=user-service.settings
 
@@ -22,6 +23,7 @@ services:
       gunicorn product-service.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - ./product-service:/app
+      - ./product-service/staticfiles:/app/staticfiles
     environment:
       - DJANGO_SETTINGS_MODULE=product-service.settings
 
@@ -34,6 +36,7 @@ services:
       gunicorn inventory-service.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - ./inventory-service:/app
+      - ./inventory-service/staticfiles:/app/staticfiles
     environment:
       - DJANGO_SETTINGS_MODULE=inventory-service.settings
 
@@ -46,5 +49,6 @@ services:
       gunicorn order-service.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - ./order-service:/app
+      - ./order-service/staticfiles:/app/staticfiles
     environment:
       - DJANGO_SETTINGS_MODULE=order-service.settings

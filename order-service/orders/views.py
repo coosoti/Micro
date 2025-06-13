@@ -4,8 +4,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Order
 from .serializers import OrderSerializer
+from drf_yasg.utils import swagger_auto_schema
+
 
 class OrderListCreateView(APIView):
+
+    @swagger_auto_schema(request_body=OrderSerializer, operation_description="Validate and Process Order.")
     def post(self, request):
         serializer = OrderSerializer(data=request.data)
         if serializer.is_valid():

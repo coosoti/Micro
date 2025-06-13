@@ -20,9 +20,12 @@ from rest_framework.authtoken.models import Token
 
 # Import DRF's built-in permission class to restrict access to authenticated users only
 from rest_framework.permissions import IsAuthenticated
+from drf_yasg.utils import swagger_auto_schema
 
 
 class RegisterView(APIView):
+
+    @swagger_auto_schema(request_body=UserSerializer)
     def post(self, request):
         # Deserialize and validate incoming user data
         serializer = UserSerializer(data=request.data)
@@ -55,6 +58,8 @@ class RegisterView(APIView):
 
 class LoginView(APIView):
     # This method handles POST requests for user login
+
+    @swagger_auto_schema(request_body=UserSerializer, operation_description="Log in a user and return an auth token.")
     def post(self, request):
         # Extract username and password from the incoming request data (JSON body)
         username = request.data.get("username")
@@ -84,6 +89,10 @@ class ProfileView(APIView):
     # This prevents anonymous users from accessing the profile endpoint
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        operation_description="Retrieve the authenticated user's profile.",
+        responses={200: UserSerializer()}
+    )
     def get(self, request):
         # Get the currently authenticated user
         user = request.user

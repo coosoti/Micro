@@ -16,6 +16,5 @@ COPY . .
 
 # Collect static files (if any)
 RUN python manage.py collectstatic --noinput
-
 # Run the application using Gunicorn
 CMD ["gunicorn", "product-service.wsgi:application", "--bind", "0.0.0.0:8000"]

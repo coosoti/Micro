@@ -17,8 +17,17 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from .docs_urls import urlpatterns as docs_urls
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/inventory/", include("inventory.urls")),
 ]
+# Append docs URLs
+urlpatterns += docs_urls
+
+# serve static files in DEBUG mode (needed for drf‑yasg assets)
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
